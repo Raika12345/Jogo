@@ -1,98 +1,77 @@
-const board = document.getElementById('board');
-const message = document.getElementById('message');
-const resetBtn = document.getElementById('reset');
-let currentPlayer = 'X'; // Jogador Humano é 'X'
-let cells = Array(16).fill('');
-let gameActive = true;
-
-function createBoard() {
-  board.innerHTML = '';
-  cells.forEach((cell, index) => {
-    const div = document.createElement('div');
-    div.classList.add('cell');
-    div.dataset.index = index;
-    div.addEventListener('click', makeMove);
-    div.textContent = cell;
-    board.appendChild(div);
-  });
+body {
+  background-color: #d6ecfa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  color: #333;
 }
 
-function makeMove(e) {
-  const index = e.target.dataset.index;
-
-  if (cells[index] === '' && gameActive) {
-    cells[index] = currentPlayer;
-    updateBoard();
-    if (checkWinner(currentPlayer)) {
-      message.textContent = `Você venceu!`;
-      gameActive = false;
-    } else if (cells.every(cell => cell !== '')) {
-      message.textContent = 'Empate!';
-      gameActive = false;
-    } else {
-      currentPlayer = 'O'; // Passa para IA
-      setTimeout(aiMove, 500); // Pequeno delay para IA parecer "pensar"
-    }
-  }
+h1 {
+  color: #3b3b6d;
+  margin-bottom: 10px;
 }
 
-function aiMove() {
-  if (!gameActive) return;
-  
-  // Estratégia simples: escolher uma célula aleatória vazia
-  const emptyCells = cells.map((cell, index) => cell === '' ? index : null).filter(i => i !== null);
-  
-  if (emptyCells.length > 0) {
-    const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    cells[randomIndex] = currentPlayer;
-    updateBoard();
-    if (checkWinner(currentPlayer)) {
-      message.textContent = `IA venceu!`;
-      gameActive = false;
-    } else if (cells.every(cell => cell !== '')) {
-      message.textContent = 'Empate!';
-      gameActive = false;
-    } else {
-      currentPlayer = 'X'; // Volta para o humano
-    }
-  }
+#scoreboard {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 20px;
+  font-size: 1.2em;
 }
 
-function updateBoard() {
-  const cellDivs = document.querySelectorAll('.cell');
-  cellDivs.forEach((div, index) => {
-    div.textContent = cells[index];
-  });
+#board {
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  grid-template-rows: repeat(4, 80px);
+  gap: 10px;
 }
 
-function checkWinner(player) {
-  const wins = [
-    // Linhas
-    [0, 1, 2, 3],
-    [4, 5, 6, 7],
-    [8, 9, 10, 11],
-    [12, 13, 14, 15],
-    // Colunas
-    [0, 4, 8, 12],
-    [1, 5, 9, 13],
-    [2, 6, 10, 14],
-    [3, 7, 11, 15],
-    // Diagonais
-    [0, 5, 10, 15],
-    [3, 6, 9, 12]
-  ];
-
-  return wins.some(combo => {
-    return combo.every(index => cells[index] === player);
-  });
+.cell {
+  width: 80px;
+  height: 80px;
+  background-color: #a7d6f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-resetBtn.addEventListener('click', () => {
-  cells = Array(16).fill('');
-  currentPlayer = 'X';
-  message.textContent = '';
-  gameActive = true;
-  createBoard();
-});
+.cell:hover {
+  background-color: #c2e6fb;
+}
 
-createBoard();
+.cell.played {
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+
+#message {
+  margin-top: 20px;
+  font-size: 1.4em;
+  color: #3b3b6d;
+}
+
+#reset {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #3b3b6d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#reset:hover {
+  background-color: #2a2a5d;
+}
